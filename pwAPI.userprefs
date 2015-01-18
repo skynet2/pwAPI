@@ -1,0 +1,60 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="pwAPI/Program.cs">
+    <Files>
+      <File FileName="pwAPI/Program.cs" Line="13" Column="4" />
+      <File FileName="pwAPI/StructuresElement/ConfigList.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresElement/Type.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresElement/Item.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresElement/ElementReader.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Readers/ElementReader.cs" Line="60" Column="16" />
+      <File FileName="pwAPI/Readers/GShopReader.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresGShop/Category.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresGShop/ShopItem.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresGShop/SaleOption.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Utils.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Utils/GShop/ClenUP.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Utils/GShopUtils.cs" Line="12" Column="4" />
+      <File FileName="pwAPI/Readers/TasksReader.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresTasks/ATaskTemplFixedData.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresTasks/TasksExtensions.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresTasks/CONVERSATION.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresTasks/task_tm.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresTasks/Task_Region.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Readers/PrecinctReader.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresPrecinct/CELPrecinct.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Readers/NpcGenReader.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/StructuresNpcGen/NpcGenStruct.cs" Line="1" Column="1" />
+      <File FileName="pwAPI/Utils/ElementUtils.cs" Line="32" Column="1" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="pwAPI" expanded="True">
+            <Node name="Readers" expanded="True" />
+            <Node name="StructuresElement" expanded="True" />
+            <Node name="Utils" expanded="True" />
+            <Node name="Program.cs" selected="True" />
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State expanded="True" selected="True" />
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State>
+          <Value>this</Value>
+          <Value>_items</Value>
+          <Value>this</Value>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/home/iren/pwAPI/pwAPI/Structures/ElementReader.cs" line="48" column="1" />
+      <Breakpoint file="/home/iren/pwAPI/pwAPI/Readers/GShopReader.cs" line="7" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
