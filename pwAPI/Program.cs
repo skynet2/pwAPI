@@ -11,8 +11,11 @@ namespace pwAPI
 		{
             var rus = new ElementReader(@"C:\work\PW_1.5.1_v101.cfg", @"C:\work\elements.data");
 		    var china = new ElementReader(@"C:\work\PW_1.5.2_v127.cfg", @"C:\chinaPW\element\data\elements.data");
-		    Utils.ElementUtils.AddUniqFly(rus, china);
-            Utils.ElementUtils.AddUniqStyles(rus,china);
+		    HashSet<string> stylesPaths;
+		    HashSet<string> weaponsPaths;
+		    HashSet<string> flyPaths;
+		    Utils.ElementUtils.AddUniqFly(rus, china,out flyPaths);
+            Utils.ElementUtils.AddUniqStyles(rus, china, out stylesPaths,out weaponsPaths);
             rus.Save(@"C:\work\elements+china.data");
             //var epic = new ElementReader(@"C:\work\PW_1.5.1_v101.cfg", @"C:\Epic Perfect World\element\info\info.pck");
             //Utils.ElementUtils.AddUniqFly(rus,epic);

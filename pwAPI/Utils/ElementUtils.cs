@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using pwAPI.Readers;
@@ -34,24 +34,42 @@ namespace pwAPI.Utils
 	        return temp;
 	    }
 
-	    public static void AddUniqFly(ElementReader oldElem, ElementReader newElem)
+	    public static void AddUniqFly(ElementReader oldElem, ElementReader newElem, out HashSet<string> flyPaths)
 	    {
+            flyPaths = new HashSet<string>();
             foreach (var newIt in newElem.GetListById(23))
             {
                 var flag = oldElem.GetListById(23).All(oldIt => !newIt.GetByKey("file_model").Equals(oldIt.GetByKey("file_model")));
-                if(flag)
-                    oldElem.AddItem(23, AdvancedCopy(oldElem.GetListById(23)[0],newIt), true, true);
+                if (flag)
+                {
+                    flyPaths.Add(UtilsIO.NormalizeString(newIt.GetByKey("file_model")));
+                    oldElem.AddItem(23, AdvancedCopy(oldElem.GetFirstInList(23), newIt), true);
+                }
+            }
+	    }
+
+	    public static void AddUniqStyles(ElementReader oldElem, ElementReader newElem, out HashSet<string> paths,
+	        out HashSet<string> weaponsPaths)
+	    {
+	        paths = new HashSet<string>();
+	        weaponsPaths = new HashSet<string>();
+	        foreach (var i in FindUniqStyles(oldElem, newElem))
+	        {
+	            var newItem = AdvancedCopy(oldElem.GetListById(84)[0], i);
+	            oldElem.AddItem(84, newItem, true);
+	            if (newItem.GetByKey("id_major_type") != (int)Type.Weapon)
+	                paths.Add(newItem.GetByKey("gender") == 0
+	                    ? "男"
+	                    : "女" + "//" + ((string) newItem.GetByKey("realname")).Replace("\0", ""));
+	            else
+	            {
+	                weaponsPaths.Add(newItem.GetByKey("file_model_right"));
+	                weaponsPaths.Add(newItem.GetByKey("file_model_left"));
+	            }
 	        }
 	    }
-		public static void AddUniqStyles(ElementReader oldElem, ElementReader newElem)
-		{
-			foreach(var i in FindUniqStyles(oldElem,newElem))
-			{
-			    
-				oldElem.AddItem (84, AdvancedCopy(oldElem.GetListById(84)[0], i),true,true);
-			}
-		}
-        private static List<Item> FindUniqStyles(ElementReader oldElem, ElementReader newElem)
+
+	    private static List<Item> FindUniqStyles(ElementReader oldElem, ElementReader newElem)
         {
             var result = new List<Item>();
             foreach (var newItem in newElem.GetListById(84))

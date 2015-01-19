@@ -23,6 +23,11 @@ namespace pwAPI.Utils
 	            newArr[i] = arr[i];
 	        return newArr;
 	    }
+
+	    public static string NormalizeString(string input)
+	    {
+	        return input.Replace("\0", "");
+	    }
 	}
 }
 

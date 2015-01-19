@@ -120,6 +120,10 @@ namespace pwAPI.Readers
 			return list59;
 		}
 
+	    public Item GetFirstInList(int listID)
+	    {
+	        return GetListById(listID)[0];
+	    }
 		public void AddItem (string key, Item newItem)
 		{
 			var arr = new Item[Items [key].Length + 1];
@@ -129,10 +133,20 @@ namespace pwAPI.Readers
 			Items [key] = arr;
 		}
 
-		public void AddItem (int id, Item newItem,bool uniq = false,bool print = false)
+	    public Item FindInList(int listID, int id)
+	    {
+	        foreach (var it in GetListById(listID).Where(it => it.GetByKey("ID") == id))
+	            return it;
+	        return null;
+	    }
+
+	    public void AddItem (int id, Item newItem,bool print = false)
 		{
+            if (ExistingId == null)
+                ElementUtils.GetExsistingIDs(this);
 			var key = GetListKey (id);
-            newItem.SetByKey("ID",GetFreeId());
+            if(ExistingId.Contains(newItem.GetByKey("ID"))) 
+                newItem.SetByKey("ID",GetFreeId());
             if(print) PrintInfo(newItem);
 			AddItem (key, newItem);
 		}
@@ -140,7 +154,7 @@ namespace pwAPI.Readers
 	    private static void PrintInfo(Item i)
 	    {
 	        Console.WriteLine("ID {0}{1} Name {2}",i.GetByKey("ID"),Environment.NewLine,
-                i.GetByKey("Name"));
+                UtilsIO.NormalizeString(i.GetByKey("Name")));
 	    }
 		public Item GetItem (string key, int pos)
 		{
