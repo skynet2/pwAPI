@@ -9,25 +9,15 @@ namespace pwAPI
 	{
 		public static void Main ()
 		{
-            var rus = new ElementReader(@"C:\work\PW_1.5.1_v101.cfg", @"C:\work\elements.data");
+            HashSet<string> stylesPaths;
+            HashSet<string> weaponsPaths;
+            HashSet<string> flyPaths;
+            var ggpw = new ElementReader(@"C:\work\PW_1.5.1_v101.cfg", @"C:\work\elements.data");
+            var epic = new ElementReader(@"C:\work\PW_1.5.1_v101.cfg", @"C:\Epic Perfect World\element\info\info.pck");
 		    var china = new ElementReader(@"C:\work\PW_1.5.2_v127.cfg", @"C:\chinaPW\element\data\elements.data");
-		    HashSet<string> stylesPaths;
-		    HashSet<string> weaponsPaths;
-		    HashSet<string> flyPaths;
-		    Utils.ElementUtils.AddUniqFly(rus, china,out flyPaths);
-            Utils.ElementUtils.AddUniqStyles(rus, china, out stylesPaths,out weaponsPaths);
-            rus.Save(@"C:\work\elements+china.data");
-            //var epic = new ElementReader(@"C:\work\PW_1.5.1_v101.cfg", @"C:\Epic Perfect World\element\info\info.pck");
-            //Utils.ElementUtils.AddUniqFly(rus,epic);
-		    //Utils.ElementUtils.AddUniqStyles(rus, epic);
-            //rus.Save(@"C:\work\elements+epic.data");
-           // var shop = new GShopReader(@"C:\work\gshop1.data");
-		    //Utils.GShopUtils.CleanUp(shop,rus);
-            //Utils.GShopUtils.AddWeapons(shop, rus);
-            //Utils.GShopUtils.AddStyles(shop, rus);
-            //shop.Save(@"C:\work\gshop2.data");
-            //Utils.GShopUtils.AddStyles(shop, rus);
-            //shop.Save(@"C:\work\gshop103.data");
+            Utils.ElementUtils.AddUniqStyles(ggpw, epic, out stylesPaths, out weaponsPaths);
+            Utils.ElementUtils.AddUniqStyles(ggpw,china, out stylesPaths, out weaponsPaths);
+            ggpw.Save(@"C:\work\elements_f.data",true);
 			Console.ReadKey ();
 		}
 	}

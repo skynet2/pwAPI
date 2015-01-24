@@ -24,6 +24,8 @@ namespace pwAPI.Utils
 
 	    private static Item AdvancedCopy(Item oldItem, Item newItem)
 	    {
+	        if (oldItem == null || newItem == null)
+	            return null;
 	         if (oldItem.Values.Length == newItem.Values.Length) return newItem;
 	        var temp = UtilsIO.DeepClone(oldItem);
 	        for (int i = 0; i < temp.Values.Length / 2; i++)
@@ -55,7 +57,11 @@ namespace pwAPI.Utils
 	        weaponsPaths = new HashSet<string>();
 	        foreach (var i in FindUniqStyles(oldElem, newElem))
 	        {
-	            var newItem = AdvancedCopy(oldElem.GetListById(84)[0], i);
+	            var newItem = AdvancedCopy(oldElem.GetFirstInList(84), i);
+
+                if (newItem.GetByKey("id_major_type") == (int)Type.Hat)
+                    CopyHat(oldElem, newElem, newItem);
+
 	            oldElem.AddItem(84, newItem, true);
 	            if (newItem.GetByKey("id_major_type") != (int)Type.Weapon)
 	                paths.Add(newItem.GetByKey("gender") == 0
@@ -69,6 +75,16 @@ namespace pwAPI.Utils
 	        }
 	    }
 
+        private static void CopyHat(ElementReader oldElem, ElementReader newElem, Item item)
+	    {
+	        int hairID = item.GetByKey("id_hair");
+	        int hairTextureID = item.GetByKey("id_hair_texture");
+            if (newElem.FindInList(64, hairID) == null || newElem.FindInList(60, hairTextureID) == null) 
+                return;
+
+            item.SetByKey("id_hair",oldElem.AddItem(64,AdvancedCopy(oldElem.GetFirstInList(64),newElem.FindInList(64,hairID))));
+            item.SetByKey("id_hair_texture",oldElem.AddItem(60,AdvancedCopy(oldElem.GetFirstInList(60),newElem.FindInList(60,hairTextureID))));
+	    }
 	    private static List<Item> FindUniqStyles(ElementReader oldElem, ElementReader newElem)
         {
             var result = new List<Item>();

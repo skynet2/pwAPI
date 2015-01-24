@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Ionic.Zip;
+using Ionic.Zlib;
 using pwAPI.StructuresElement;
 using pwAPI.Utils;
 
@@ -140,7 +142,7 @@ namespace pwAPI.Readers
 	        return null;
 	    }
 
-	    public void AddItem (int id, Item newItem,bool print = false)
+	    public int AddItem (int id, Item newItem,bool print = false)
 		{
             if (ExistingId == null)
                 ElementUtils.GetExsistingIDs(this);
@@ -149,6 +151,7 @@ namespace pwAPI.Readers
                 newItem.SetByKey("ID",GetFreeId());
             if(print) PrintInfo(newItem);
 			AddItem (key, newItem);
+	        return newItem.GetByKey("ID");
 		}
 
 	    private static void PrintInfo(Item i)
@@ -175,7 +178,7 @@ namespace pwAPI.Readers
 			return off20;
 		}
         
-		public void Save (String newPath = null)
+		public void Save (String newPath = null,bool zip = false)
 		{
 		    if (newPath == null) newPath = _path;
 			var bw = new BinaryWriter (File.OpenWrite (newPath));
@@ -200,6 +203,16 @@ namespace pwAPI.Readers
 
 			}
             _confList.Insert(58,l58);
+            if(!zip)
+                return;
+		    using (var file = new ZipFile(_path+".zip"))
+		    {
+		        file.CompressionLevel = CompressionLevel.BestCompression;
+		        file.ParallelDeflateThreshold = -1;
+		        file.AddFile(_path);
+                file.Save();
+		    }
+
 		}
 
 		private static void WriteList (BinaryWriter bw, List<byte[]> ls)
