@@ -4,15 +4,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A968EA08-ABE0-4562-857C-E68926B2EEA7}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>da73a561-0623-4425-8893-fbfb94e71b26</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>pwApi</RootNamespace>
-    <AssemblyName>pwApi</AssemblyName>
+    <RootNamespace>test</RootNamespace>
+    <AssemblyName>test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,6 +23,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -30,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ionic.Zip">
-      <HintPath>..\packages\DotNetZip.1.9.3\lib\net20\Ionic.Zip.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,28 +41,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enums\GShop.cs" />
-    <Compile Include="Enums\Style.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Readers\ElementReader.cs" />
-    <Compile Include="Readers\GShopReader.cs" />
-    <Compile Include="Readers\NpcGenReader.cs" />
-    <Compile Include="Readers\PrecinctReader.cs" />
-    <Compile Include="Readers\TasksReader.cs" />
-    <Compile Include="StructuresElement\ConfigList.cs" />
-    <Compile Include="StructuresElement\Item.cs" />
-    <Compile Include="StructuresElement\Type.cs" />
-    <Compile Include="StructuresGShop\Category.cs" />
-    <Compile Include="StructuresGShop\SaleOption.cs" />
-    <Compile Include="StructuresGShop\ShopItem.cs" />
-    <Compile Include="Utils\ElementUtils.cs" />
-    <Compile Include="Utils\GShopUtils.cs" />
-    <Compile Include="Utils\UtilsIO.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

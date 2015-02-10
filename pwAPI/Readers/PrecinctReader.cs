@@ -1,10 +1,9 @@
-namespace pwAPI.Readers
+﻿namespace pwApi.Readers
 {
-	public class Precinct
-	{
-		public Precinct ()
-		{
-		}
-	}
+    public class Precinct
+    {
+        public Precinct()
+        {
+        }
+    }
 }
-
