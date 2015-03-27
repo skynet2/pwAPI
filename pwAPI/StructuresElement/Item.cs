@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using pwApi.Utils;
@@ -12,6 +13,20 @@ namespace pwApi.StructuresElement
         public Item(dynamic[,] items)
         {
             Values = items;
+        }
+        public string Name
+        {
+            get
+            {
+                return Values[1,1];
+            }
+        }
+        public string EditorView
+        {
+            get
+            {
+                return string.Format("{0} - {1}",GetByKey("ID"),GetByKey("Name"));
+            }
         }
         public void Save(BinaryWriter bw, ConfigList ls)
         {
@@ -36,9 +51,16 @@ namespace pwApi.StructuresElement
         }
         public dynamic GetByKey(string key)
         {
-            for (int i = 0; i < Values.Length; i++)
-                if (Values[i, 0] == key)
-                    return Values[i, 1];
+            try
+            {
+                for (var i = 0; i < Values.Length; i++)
+                    if (Values[i, 0] == key)
+                        return Values[i, 1];
+            }
+            catch (Exception)
+            {
+                return null;
+            }
             return null;
         }
         public void SetByKey(string key, dynamic val)
@@ -78,12 +100,12 @@ namespace pwApi.StructuresElement
                     case "string:":
                         vvv[i, 0] = tt.Name;
                         vvv[i, 1] = Encoding.GetEncoding(936)
-                            .GetString(br.ReadBytes(tt.Size));
+                            .GetString(br.ReadBytes(tt.Size)).Replace("\0", "");
                         break;
                     case "wstring:":
                         vvv[i, 0] = tt.Name;
                         vvv[i, 1] = Encoding.Unicode.GetString(
-                            br.ReadBytes(tt.Size));
+                            br.ReadBytes(tt.Size)).Replace("\0","");
                         break;
                     case "float":
                         vvv[i, 0] = tt.Name;

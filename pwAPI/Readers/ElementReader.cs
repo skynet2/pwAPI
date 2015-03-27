@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Ionic.Zip;
-using Ionic.Zlib;
 using pwApi.Utils;
 using pwApi.StructuresElement;
 
@@ -12,7 +10,7 @@ namespace pwApi.Readers
 {
     public class ElementReader
     {
-        public Dictionary<string, Item[]> Items;
+        public Dictionary<string, Item[]> Items { get; set; }
         private readonly BinaryReader _br;
         private readonly List<ConfigList> _confList;
         public HashSet<int> ExistingId;
@@ -72,7 +70,9 @@ namespace pwApi.Readers
 
         public Item[] GetListById(int id)
         {
-            return Items[GetListKey(id)];
+            if(id == 59)
+                id = 60;
+                return Items[GetListKey(id)];
         }
 
         private string GetListKey(int id)
@@ -132,6 +132,16 @@ namespace pwApi.Readers
         {
             return GetListById(listID)[0];
         }
+
+        public Item SearchItem(int id,int list)
+        {
+            foreach (var it in GetListById(list))
+            {
+                if (it.GetByKey("ID") == id)
+                    return it;
+            }
+            return null;
+        }
         public void AddItem(string key, Item newItem)
         {
             var arr = new Item[Items[key].Length + 1];
@@ -147,19 +157,52 @@ namespace pwApi.Readers
                 return it;
             return null;
         }
-
-        public int AddItem(int id, Item newItem, bool print = false)
+        public int AddItem(int listID, Item newItem, bool print = false)
         {
             if (ExistingId == null)
                 ElementUtils.GetExsistingIDs(this);
-            var key = GetListKey(id);
-            if (ExistingId.Contains(newItem.GetByKey("ID")))
+            var key = GetListKey(listID);
+            if (ExistingId.Contains(Convert.ToInt32(newItem.GetByKey("ID"))))
                 newItem.SetByKey("ID", GetFreeId());
             if (print) PrintInfo(newItem);
             AddItem(key, newItem);
             return newItem.GetByKey("ID");
         }
 
+        public void RemoveItem(int list, Item it)
+        {
+            Item removeItem;
+            var arr = new Item[GetListById(list).Length-1];
+            int i = 0;
+            foreach (var items in GetListById(list))
+            {
+                if (items.GetByKey("ID") == it.GetByKey("ID"))
+                {
+                    continue;
+                }
+                arr[i++] = items;
+            }
+            Items[GetListKey(list)] = arr;
+        }
+        public string GetIcon(int recepie)
+        {
+            Item it = FindInList(70, recepie);
+            if (it == null)
+                return null;
+            var newID = it.GetByKey("targets_1_id_to_make");
+            int[] lists = new []{3,6,16};
+            for (int i = 4; i <= 147; i++)
+            {
+                var val = ((Item) FindInList(i, newID));
+                if (val == null)
+                    continue;
+                var kk = val.GetByKey("file_icon");
+                if (kk != null && kk != "")
+                    return kk;
+            }
+            return null;
+
+        }
         private static void PrintInfo(Item i)
         {
             Console.WriteLine("ID {0}{1} Name {2}", i.GetByKey("ID"), Environment.NewLine,
@@ -213,15 +256,7 @@ namespace pwApi.Readers
 
             }
             _confList.Insert(58, l58);
-            if (!zip)
-                return;
-            using (var file = new ZipFile(_path + ".zip"))
-            {
-                file.CompressionLevel = CompressionLevel.BestCompression;
-                file.ParallelDeflateThreshold = -1;
-                file.AddFile(_path);
-                file.Save();
-            }
+            bw.Close();
 
         }
 

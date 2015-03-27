@@ -25,7 +25,7 @@ namespace pwApi.Utils
             element.ExistingId = ids;
         }
 
-        private static Item AdvancedCopy(Item oldItem, Item newItem)
+        public static Item AdvancedCopy(Item oldItem, Item newItem)
         {
             if (oldItem == null || newItem == null)
                 return null;
