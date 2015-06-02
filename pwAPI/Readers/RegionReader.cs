@@ -51,7 +51,7 @@ namespace pwApi.Readers
             using (var wr = new StreamWriter(path, false, Encoding.GetEncoding(1200)))
             {
                 wr.WriteLine("version  5");
-                wr.WriteLine("1312962951");
+                wr.WriteLine(Region.TimeStamp);
                 wr.WriteLine();
                 foreach (var region in Region.Regions)
                 {
