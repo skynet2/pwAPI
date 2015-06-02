@@ -12,7 +12,7 @@ namespace pwApi.Readers
     {
         public Dictionary<string, Item[]> Items { get; set; }
         private readonly BinaryReader _br;
-        private readonly List<ConfigList> _confList;
+        private readonly ConfigLists _confList;
         public HashSet<int> ExistingId;
         private string _path;
         // SAVERS
@@ -21,32 +21,38 @@ namespace pwApi.Readers
         public ElementReader(string configPath, string elementPath)
         {
             _path = elementPath;
-            _confList = ConfigList.ParseList(configPath);
+            _confList = new ConfigLists();
+            _confList.ParseList(configPath);
             Items = new Dictionary<string, Item[]>();
             _br = new BinaryReader(File.OpenRead(elementPath));
             _somevals = new Dictionary<byte, List<byte[]>>();
-            var bb = new List<byte[]> { _br.ReadBytes(8) };
-            _somevals.Add(0, bb);
+            var bb = new List<byte[]> { _br.ReadBytes(4) };
+            _somevals.Add(255, bb);
 
-            for (var i = 0; i < _confList.Count; i++)
+            for (byte i = 0; i < _confList.Lists.Count; i++)
             {
-                switch (i)
+                if(i != _confList.NpcTalk)
                 {
-                    case 20:
-                        _somevals.Add(Convert.ToByte(i), Offset20());
-                        Items.Add(_confList[i].Name, List(i));
-                        break;
-                    case 58:
-                        _somevals.Add(Convert.ToByte(i), List58());
-                        break;
-                    case 100:
-                        _somevals.Add(Convert.ToByte(i), Offset100());
-                        Items.Add(_confList[i].Name, List(i));
-                        break;
-                    default:
-                        Items.Add(_confList[i].Name, List(i));
-                        break;
+                    if(_confList.Lists[i].Skip != "0" && _confList.Lists[i].Skip != "AUTO")
+                        _somevals[i] = new List<byte[]>{_br.ReadBytes(int.Parse(_confList.Lists[i].Skip))};
+                    else if(_confList.Lists[i].Skip == "AUTO")
+                    {
+                        _somevals[i] = new List<byte[]> { _br.ReadBytes(4) };
+                        var count = _br.ReadInt32();
+                        _somevals[i].Add(IntToByte(count));
+                        _somevals[i].Add(_br.ReadBytes(count));
+                        count = _br.ReadInt32();
+                        while(count <= 0 || count > 10000)
+                        {
+                            _somevals[i].Add(IntToByte(count));
+                            count = _br.ReadInt32();
+                        }
+                        _br.BaseStream.Position -= 4;
+                    }
+                    Items.Add(_confList.Lists[i].Name, List(i));
                 }
+                else
+                    _somevals.Add(Convert.ToByte(i), List58());
             }
             Console.WriteLine(Process.GetCurrentProcess().WorkingSet64);
             Console.WriteLine((GC.GetTotalMemory(true) / 1024f) / 1024f);
@@ -92,17 +98,8 @@ namespace pwApi.Readers
             var count = _br.ReadInt32();
             var items = new Item[count];
             for (var z = 0; z < count; z++)
-                items[z] = Item.ParseItem(_confList[i], _br);
+                items[z] = Item.ParseItem(_confList.Lists[i], _br);
             return items;
-        }
-
-        private List<byte[]> Offset100()
-        {
-            var off100 = new List<byte[]> { _br.ReadBytes(4) };
-            var count = _br.ReadInt32();
-            off100.Add(IntToByte(count));
-            off100.Add(_br.ReadBytes(count));
-            return off100;
         }
 
         private List<byte[]> List58()
@@ -151,22 +148,32 @@ namespace pwApi.Readers
             Items[key] = arr;
         }
 
+        public Item GetLastInList(int list)
+        {
+            Item[] ls = GetListById(list);
+            return ls.Last();
+        }
         public Item FindInList(int listID, int id)
         {
             foreach (var it in GetListById(listID).Where(it => it.GetByKey("ID") == id))
                 return it;
             return null;
         }
-        public int AddItem(int listID, Item newItem, bool print = false)
+
+        public int AddItem(int listID, Item newItem, bool checkID = true)
         {
             if (ExistingId == null)
                 ElementUtils.GetExsistingIDs(this);
             var key = GetListKey(listID);
-            if (ExistingId.Contains(Convert.ToInt32(newItem.GetByKey("ID"))))
-                newItem.SetByKey("ID", GetFreeId());
-            if (print) PrintInfo(newItem);
-            AddItem(key, newItem);
-            return newItem.GetByKey("ID");
+            if (checkID)
+            {
+                if (ExistingId.Contains(Convert.ToInt32(newItem.GetByKey("ID"))))
+                    newItem.SetByKey("ID", GetFreeId());
+            }
+            //   if (print) PrintInfo(newItem);
+            var it = ElementUtils.AdvancedCopy(GetFirstInList(listID), newItem);
+            AddItem(key, it);
+            return it.GetByKey("ID");
         }
 
         public void RemoveItem(int list, Item it)
@@ -174,17 +181,19 @@ namespace pwApi.Readers
             Item removeItem;
             var arr = new Item[GetListById(list).Length-1];
             int i = 0;
+            bool deleted = false;
             foreach (var items in GetListById(list))
             {
-                if (items.GetByKey("ID") == it.GetByKey("ID"))
+                if (it == null || (items.GetByKey("ID") == it.GetByKey("ID")) && !deleted)
                 {
+                    deleted = true;
                     continue;
                 }
                 arr[i++] = items;
             }
             Items[GetListKey(list)] = arr;
         }
-        public string GetIcon(int recepie)
+        public string GetIcon70(int recepie)
         {
             Item it = FindInList(70, recepie);
             if (it == null)
@@ -201,7 +210,23 @@ namespace pwApi.Readers
                     return kk;
             }
             return null;
+        }
 
+        public string GetIcon(int item)
+        {
+            if (item == 0)
+                return "";
+            for(int i = 3 ; i <= Items.Count; i++)
+        //    foreach (var page in Items)
+            {
+                var page = Items.ElementAt(i);
+                foreach (Item it in page.Value)
+                {
+                    if (Convert.ToInt32(it.GetByKey("ID")) == item)
+                        return it.GetByKey("file_icon");
+                }
+            }
+            return "";
         }
         private static void PrintInfo(Item i)
         {
@@ -231,31 +256,26 @@ namespace pwApi.Readers
         {
             if (newPath == null) newPath = _path;
             var bw = new BinaryWriter(File.OpenWrite(newPath));
-            WriteList(bw, _somevals[0]);
-            var l58 = _confList[58];
-            _confList.Remove(l58);
-            for (int i = 0; i < Items.Keys.Count; i++)
+            WriteList(bw, _somevals[255]);
+            for(byte i = 0; i < _confList.Lists.Count; i++)
             {
-                if (i == 20)
+                if(i < 255 && i != _confList.NpcTalk && _somevals.ContainsKey(i))
                 {
-                    WriteList(bw, _somevals[20]);
+                    WriteList(bw, _somevals[i]);
                 }
-                if (i == 58)
+                if(i == _confList.NpcTalk)
                 {
-                    WriteList(bw, _somevals[58]);
-                }
-                if (i == 99)
-                {
-                    WriteList(bw, _somevals[100]);
+                    WriteList(bw, _somevals[_confList.NpcTalk]);
+                    continue;
                 }
                 var keys = Items.Keys;
-                var currentKey = keys.ElementAt(i);
+                var currentKey = keys.ElementAt(i > _confList.NpcTalk ? i - 1: i);
                 bw.Write(Items[currentKey].Length);
                 foreach (var item in Items[currentKey])
-                    item.Save(bw, _confList[i]);
+                    if(item != null)
+                        item.Save(bw, _confList.Lists[i]);
 
             }
-            _confList.Insert(58, l58);
             bw.Close();
 
         }

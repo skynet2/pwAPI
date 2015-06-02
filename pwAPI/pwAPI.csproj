@@ -36,6 +36,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -50,6 +51,7 @@
     <Compile Include="Readers\GShopReader.cs" />
     <Compile Include="Readers\NpcGenReader.cs" />
     <Compile Include="Readers\PrecinctReader.cs" />
+    <Compile Include="Readers\RegionReader.cs" />
     <Compile Include="Readers\TasksReader.cs" />
     <Compile Include="StructuresElement\ConfigList.cs" />
     <Compile Include="StructuresElement\Item.cs" />
@@ -57,6 +59,9 @@
     <Compile Include="StructuresGShop\Category.cs" />
     <Compile Include="StructuresGShop\SaleOption.cs" />
     <Compile Include="StructuresGShop\ShopItem.cs" />
+    <Compile Include="StructuresRegion\Transport.cs" />
+    <Compile Include="StructuresRegion\RegionStruct.cs" />
+    <Compile Include="StructuresRegion\Region.cs" />
     <Compile Include="Utils\ElementUtils.cs" />
     <Compile Include="Utils\GShopUtils.cs" />
     <Compile Include="Utils\UtilsIO.cs" />
